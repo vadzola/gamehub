@@ -1,20 +1,20 @@
-datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+generator client {
+  provider        = "prisma-client-js"
+  
 }
 
-generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+datasource db {
+  provider = "mongodb"
+  url  = env("DATABASE_URL")
 }
+
 
 model User {
-  id String @id @default(uuid())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
   username String @unique
-  imageUrl String @db.Text
+  imageUrl String 
   externalUserId String @unique
-  bio String? @db.Text
+  bio String? 
 
   following Follow[] @relation("Following")
   followedBy Follow[] @relation("FollowedBy")
@@ -29,55 +29,50 @@ model User {
 }
 
 model Stream {
-  id String @id @default(uuid())
-  name String @db.Text
-  thumbnailUrl String? @db.Text
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String 
+  thumbnailUrl String?
 
-  ingressId String? @unique
-  serverUrl String? @db.Text
-  streamKey String? @db.Text
+  ingressId String?
+  serverUrl String? 
+  streamKey String? 
+
+  
+
 
   isLive Boolean @default(false)
   isChatEnabled Boolean @default(true)
   isChatDelayed Boolean @default(false)
   isChatFollowersOnly Boolean @default(false)
 
-  userId String @unique
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  userId String @unique @db.ObjectId
+  user User @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([ingressId])
-  @@fulltext([name])
+ 
+  
 }
 
 model Follow {
-  id String @id @default(uuid())
-  followerId String
-  followingId String
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  followerId String @unique @db.ObjectId
+  followingId String @unique @db.ObjectId
 
-  follower User @relation(name: "Following", fields: [followerId], references: [id], onDelete: Cascade)
-  following User @relation(name: "FollowedBy", fields: [followingId], references: [id], onDelete: Cascade)
+  follower User @relation(name: "Following", fields: [followerId], references: [id])
+  following User @relation(name: "FollowedBy", fields: [followingId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@unique([followerId, followingId])
-  @@index([followerId])
-  @@index([followingId])
-}
+  
+  
+  }
 
 model Block {
-  id String @id @default(uuid())
-  blockerId String
-  blockedId String
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  blockerId String @unique @db.ObjectId
+  blockedId String @unique @db.ObjectId
 
-  blocker User @relation(name: "Blocking", fields: [blockerId], references: [id], onDelete: Cascade)
-  blocked User @relation(name: "BlockedBy", fields: [blockedId], references: [id], onDelete: Cascade)
-
+  blocker User @relation(name: "Blocking", fields: [blockerId], references: [id])
+  blocked User @relation(name: "BlockedBy", fields: [blockedId], references: [id])
   @@unique([blockerId, blockedId])
-  @@index([blockerId])
-  @@index([blockedId])
-}
+  }
