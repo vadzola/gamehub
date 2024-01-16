@@ -33,7 +33,7 @@ model Stream {
   name String 
   thumbnailUrl String?
 
-  ingressId String?
+  ingressId String? @unique @db.ObjectId
   serverUrl String? 
   streamKey String? 
 
@@ -55,8 +55,8 @@ model Stream {
 
 model Follow {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  followerId String @unique @db.ObjectId
-  followingId String @unique @db.ObjectId
+  followerId String @unique  @db.ObjectId
+  followingId String @unique  @db.ObjectId
 
   follower User @relation(name: "Following", fields: [followerId], references: [id])
   following User @relation(name: "FollowedBy", fields: [followingId], references: [id])
@@ -69,10 +69,10 @@ model Follow {
 
 model Block {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  blockerId String @unique @db.ObjectId
-  blockedId String @unique @db.ObjectId
+  blockerId String @unique  @db.ObjectId
+  blockedId String @unique  @db.ObjectId
 
   blocker User @relation(name: "Blocking", fields: [blockerId], references: [id])
   blocked User @relation(name: "BlockedBy", fields: [blockedId], references: [id])
-  @@unique([blockerId, blockedId])
+ 
   }
