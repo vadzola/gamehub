@@ -17,7 +17,7 @@ export const isBlockedByUser = async (id: string) => {
       return false;
     }
 
-    const existingBlock = await db.block.findUnique({
+    const existingBlock = await db.block.findFirst({
       where: {
         
           blockerId: otherUser.id,
@@ -39,7 +39,7 @@ export const blockUser = async (id: string) => {
     throw new Error("Cannot block yourself");
   }
 
-  const otherUser = await db.user.findUnique({
+  const otherUser = await db.user.findFirst({
     where: { id }
   });
 
@@ -47,7 +47,7 @@ export const blockUser = async (id: string) => {
     throw new Error("User not found");
   }
 
-  const existingBlock = await db.block.findUnique({
+  const existingBlock = await db.block.findFirst({
     where: {
      
         blockerId: self.id,
@@ -88,7 +88,7 @@ export const unblockUser = async (id: string) => {
     throw new Error("User not found");
   }
 
-  const existingBlock = await db.block.findUnique({
+  const existingBlock = await db.block.findFirst({
     where: {
       
         blockerId: self.id,
